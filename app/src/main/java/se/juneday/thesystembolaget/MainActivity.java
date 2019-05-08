@@ -42,10 +42,18 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<Product> adapter;
 
+<<<<<<< HEAD
    /* @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+=======
+    /*@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+>>>>>>> f13f309b0b0a7ced08f0dc0e78dc6544feb04d93
     } */
 
 
@@ -74,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.product_list);
 
         // create an adapter (with the faked products)
-        adapter = new ArrayAdapter<Product>(this,
+        adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
                 products);
 
@@ -97,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 productList .add(m);
                 Log.d(LOG_TAG, " * " + m);
             } catch (JSONException e) {
-                ; // is ok since this is debug
+                 // is ok since this is debug
                 Log.d(LOG_TAG, "Å nej, JSON sket sig. " + e);
             }
         }
