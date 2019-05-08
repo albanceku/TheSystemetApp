@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import se.juneday.thesystembolaget.domain.Product;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,11 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<Product> adapter;
 
-    @Override
+   /* @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
+    } */
 
 
     private void createFakedProducts() {
@@ -129,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-  /*  @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         // setup listview (and friends)
         setupListView();
 
-    } */
+    }
 
     private static final String MIN_ALCO = "min_alcohol";
     private static final String MAX_ALCO = "max_alcohol";
