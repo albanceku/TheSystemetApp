@@ -44,11 +44,12 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<Product> adapter;
 
-    @Override
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
+
+    } */
 
 
     private void createFakedProducts() {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.product_list);
 
         // create an adapter (with the faked products)
-        adapter = new ArrayAdapter<Product>(this,
+        adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
                 products);
 
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 productList .add(m);
                 Log.d(LOG_TAG, " * " + m);
             } catch (JSONException e) {
-                ; // is ok since this is debug
+                 // is ok since this is debug
                 Log.d(LOG_TAG, "Å nej, JSON sket sig. " + e);
             }
         }
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-  /*  @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         // setup listview (and friends)
         setupListView();
 
-    } */
+    }
 
     private static final String MIN_ALCO = "min_alcohol";
     private static final String MAX_ALCO = "max_alcohol";

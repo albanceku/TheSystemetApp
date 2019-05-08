@@ -34,7 +34,7 @@ public class PopupActivity extends AppCompatActivity {
 
     public void closeActivity() {
         finish();
-        System.exit(0);
+
     }
     public void openMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
