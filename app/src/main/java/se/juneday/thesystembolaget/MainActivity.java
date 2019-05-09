@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 .productGroup("Öl")
                 .type("Öl")
                 .volume(330).build();
-        products.add(p1);
-        products.add(p2);
+     //   products.add(p1);
+     //   products.add(p2);
     }
 
     private void setupListView() {
