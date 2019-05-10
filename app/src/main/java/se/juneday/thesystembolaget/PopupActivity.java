@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import se.juneday.thesystembolaget.dialogs.AgeDialog;
+
 public class PopupActivity extends AppCompatActivity {
     private Button button;
     private Button noButton;
@@ -32,8 +34,8 @@ public class PopupActivity extends AppCompatActivity {
     }
 
     public void openDialog() {
-        PermissionDialog pd1 = new PermissionDialog();
-        pd1.show(getSupportFragmentManager(), "permission dialog");
+        AgeDialog ad = new AgeDialog();
+        ad.show(getSupportFragmentManager(), "age dialog");
     }
 
    public void closeActivity() {

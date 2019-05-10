@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.juneday.thesystembolaget.dialogs.AgeDialog;
+import se.juneday.thesystembolaget.dialogs.ProductErrorDialog;
 import se.juneday.thesystembolaget.domain.Product;
 
 public class MainActivity extends AppCompatActivity {
@@ -219,6 +221,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                // Log.d(LOG_TAG, " cause: " + error.getCause().getMessage());
+
+                ProductErrorDialog ped = new ProductErrorDialog();
+                ped.show(getSupportFragmentManager(), "product error dialog");
 
                 // lägg in toast(widget)/popup att den varnar när inga produkter hittas.
             }

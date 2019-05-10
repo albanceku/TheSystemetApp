@@ -1,4 +1,4 @@
-package se.juneday.thesystembolaget;
+package se.juneday.thesystembolaget.dialogs;
 
 import android.app.Activity;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog;
 
 
 
-public class PermissionDialog extends AppCompatDialogFragment {
+public class AgeDialog extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -20,14 +20,13 @@ public class PermissionDialog extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
-                })
+                });
              /*   .setNeutralButton("exit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                       getActivity().finish();
                     }
                 }) */
-                ;
 
         return builder.create();
     }
