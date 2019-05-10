@@ -26,16 +26,20 @@ public class PopupActivity extends AppCompatActivity {
         noButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                closeActivity();
+                openDialog();
             }
         });
     }
 
-    public void closeActivity() {
-        finish();
-
+    public void openDialog() {
+        PermissionDialog pd1 = new PermissionDialog();
+        pd1.show(getSupportFragmentManager(), "permission dialog");
     }
+
+   public void closeActivity() {
+        finish();
+    }
+
     public void openMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

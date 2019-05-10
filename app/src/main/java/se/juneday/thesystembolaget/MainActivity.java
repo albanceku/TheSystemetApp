@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import se.juneday.thesystembolaget.domain.Product;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,34 +41,16 @@ public class MainActivity extends AppCompatActivity {
     private List<Product> products;
     private ListView listView;
     private ArrayAdapter<Product> adapter;
+    private List<String> latestSearch = new ArrayList<>();
 
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    private static final String MIN_ALCO = "min_alcohol";
+    private static final String MAX_ALCO = "max_alcohol";
+    private static final String MIN_PRICE = "min_price";
+    private static final String MAX_PRICE = "max_price";
+    // private static final String TYPE = "product_group";
+    private static final String NAME = "name";
 
-    } */
 
-
-    private void createFakedProducts() {
-        products = new ArrayList<>();
-        Product p1 = new Product.Builder()
-                .alcohol(4.4)
-                .name("Pilsner Urquell")
-                .nr(1234)
-                .productGroup("Öl")
-                .type("Öl")
-                .volume(330).build();
-        Product p2 = new Product.Builder()
-                .alcohol(4.4)
-                .name("Baron Trenk")
-                .nr(1234)
-                .productGroup("Öl")
-                .type("Öl")
-                .volume(330).build();
-     //   products.add(p1);
-     //   products.add(p2);
-    }
 
     private void setupListView() {
         // look up a reference to the ListView object
@@ -81,9 +61,11 @@ public class MainActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 products);
 
+        Log.d(LOG_TAG, " products: " + products);
         // Set listView's adapter to the new adapter
         listView.setAdapter(adapter);
     }
+
 
     private List<Product> jsonToProducts(JSONArray array) {
         Log.d(LOG_TAG, "jsonToProducts()");
@@ -135,21 +117,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // set up faked products
-        createFakedProducts();
+        products = new ArrayList<>();
 
         // setup listview (and friends)
         setupListView();
 
     }
-
-    private static final String MIN_ALCO = "min_alcohol";
-    private static final String MAX_ALCO = "max_alcohol";
-    private static final String MIN_PRICE = "min_price";
-    private static final String MAX_PRICE = "max_price";
-    private static final String TYPE = "product_group";
-    private static final String NAME = "name";
-
 
     // get the entered text from a view
     private String valueFromView(View inflated, int viewId) {
@@ -184,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
                 addToMap(arguments, MAX_ALCO, valueFromView(viewInflated, R.id.max_alco_input));
                 addToMap(arguments, MIN_PRICE, valueFromView(viewInflated, R.id.min_price_input));
                 addToMap(arguments, MAX_PRICE, valueFromView(viewInflated, R.id.max_price_input));
+            // addToMap(arguments, TYPE, valueFromView(viewInflated, R.id.product_group));
+                addToMap(arguments, NAME, valueFromView(viewInflated, R.id.name));
 
                 // Given the map, s earch for products and update the listview
                 searchProducts(arguments);
@@ -212,6 +187,12 @@ public class MainActivity extends AppCompatActivity {
                     + entry.getKey()
                     + "="
                     + entry.getValue();
+
+            latestSearch.add(entry.getKey() + "=" + entry.getValue());
+            Log.d(LOG_TAG, "latestSearch" + latestSearch);
+
+        Log.d(LOG_TAG, " arguments: " + entry.getValue());
+
         }
         // print argument
         Log.d(LOG_TAG, " arguments: " + argumentString);
@@ -236,12 +217,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d(LOG_TAG, " cause: " + error.getCause().getMessage());
+               // Log.d(LOG_TAG, " cause: " + error.getCause().getMessage());
+
+                // lägg in toast(widget)/popup att den varnar när inga produkter hittas.
             }
         });
 
         // Add the request to the RequestQueue.
         queue.add(jsonArrayRequest);
+
+
     }
 
 }
