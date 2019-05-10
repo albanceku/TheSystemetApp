@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             // addToMap(arguments, TYPE, valueFromView(viewInflated, R.id.product_group));
                 addToMap(arguments, NAME, valueFromView(viewInflated, R.id.name));
 
-                // Given the map, s earch for products and update the listview
+                // Given the map, search for products and update the listview
                 searchProducts(arguments);
             }
         });
