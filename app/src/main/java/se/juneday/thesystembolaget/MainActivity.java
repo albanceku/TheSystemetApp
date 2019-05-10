@@ -226,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
                 ped.show(getSupportFragmentManager(), "product error dialog");
 
                 // lägg in toast(widget)/popup att den varnar när inga produkter hittas.
+
+                showSearchDialog();
             }
         });
 
