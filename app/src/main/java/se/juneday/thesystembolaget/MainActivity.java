@@ -1,6 +1,9 @@
 package se.juneday.thesystembolaget;
 
 import android.content.DialogInterface;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,6 +39,8 @@ import java.util.Map;
 import se.juneday.thesystembolaget.dialogs.AgeDialog;
 import se.juneday.thesystembolaget.dialogs.ProductErrorDialog;
 import se.juneday.thesystembolaget.domain.Product;
+
+import static se.juneday.thesystembolaget.R.id.place_search;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -91,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
         return productList;
     }
 
-    @Override
+  /*  @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // action with ID action_refresh was selected
-            case R.id.action_search:
+            case place_search:
                 Log.d(LOG_TAG, "user presssed SEARCH");
                 showSearchDialog(); //
                 break;
@@ -104,15 +109,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
+    } */
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.actionbar_menu, menu);
 
-        return true;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +124,45 @@ public class MainActivity extends AppCompatActivity {
         // setup listview (and friends)
         setupListView();
 
-    }
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_placement);
+        bottomNav.setOnNavigationItemSelectedListener(navlistener);
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+    }
+    private BottomNavigationView.OnNavigationItemSelectedListener navlistener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    Fragment selectedFragment= null;
+
+                    switch(menuItem.getItemId()){
+                        case R.id.place_home:
+                            selectedFragment = new HomeFragment();
+                            break;
+                        case R.id.place_favorites:
+                            selectedFragment = new FavoritesFragment();
+                            break;
+                        case R.id.place_search:
+                            selectedFragment = new SearchFragment();
+                            Log.d(LOG_TAG, "user presssed SEARCH");
+                            showSearchDialog();
+                            break;
+
+                    }
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment)
+                            .commit();
+                    return true;
+                }
+            };
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bottom_placement, menu);
+
+        return true;
+    }
     // get the entered text from a view
     private String valueFromView(View inflated, int viewId) {
         return ((EditText) inflated.findViewById(viewId)).getText().toString();
