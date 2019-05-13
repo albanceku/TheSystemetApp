@@ -1,6 +1,7 @@
 package se.juneday.thesystembolaget;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<Product> adapter;
     private List<String> latestSearch = new ArrayList<>();
+    List<String> items = new ArrayList<String>();
 
     private static final String MIN_ALCO = "min_alcohol";
     private static final String MAX_ALCO = "max_alcohol";
@@ -56,12 +58,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupListView() {
         // look up a reference to the ListView object
-        listView = findViewById(R.id.product_list);
+        listView = findViewById(R.id.product_list); // ändra här till latestsearch_list
 
         // create an adapter (with the faked products)
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
-                products);
+                products);  //ändra till latestsearch
 
         Log.d(LOG_TAG, " products: " + products);
         // Set listView's adapter to the new adapter
@@ -120,7 +122,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         products = new ArrayList<>();
+
+        loadLatestSearch();
+        Log.d(LOG_TAG, "items" + items);
 
         // setup listview (and friends)
         setupListView();
@@ -191,7 +197,9 @@ public class MainActivity extends AppCompatActivity {
                     + "="
                     + entry.getValue();
 
-            latestSearch.add(entry.getKey() + "=" + entry.getValue());
+       //     Product lsProduct = new Product(entry.getValue());
+
+            latestSearch.add(entry.getValue());
             Log.d(LOG_TAG, "latestSearch" + latestSearch);
 
         Log.d(LOG_TAG, " arguments: " + entry.getValue());
@@ -199,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
         }
         // print argument
         Log.d(LOG_TAG, " arguments: " + argumentString);
+
+        saveLatestSearch();
 
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://rameau.sandklef.com:9090/search/products/all/" + argumentString;
@@ -225,8 +235,6 @@ public class MainActivity extends AppCompatActivity {
                 ProductErrorDialog ped = new ProductErrorDialog();
                 ped.show(getSupportFragmentManager(), "product error dialog");
 
-                // lägg in toast(widget)/popup att den varnar när inga produkter hittas.
-
                 showSearchDialog();
             }
         });
@@ -234,6 +242,34 @@ public class MainActivity extends AppCompatActivity {
         // Add the request to the RequestQueue.
         queue.add(jsonArrayRequest);
 
+
+    }
+
+    public void saveLatestSearch() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String s : latestSearch) {
+            stringBuilder.append(s);
+            stringBuilder.append(",");
+            }
+
+        SharedPreferences settings = getSharedPreferences("PREFS", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("latestSearch", stringBuilder.toString());
+        editor.commit();
+        }
+
+    public void loadLatestSearch() {
+        SharedPreferences settings = getSharedPreferences("PREFS", 0);
+        String latestSearchString = settings.getString("latestSearch", "");
+        String[] itemValue = latestSearchString.split(",");
+
+        for (int i = 0; i < itemValue.length; i++) {
+            items.add(itemValue[i]);
+        }
+
+        for (int i=0; i<items.size(); i++) {
+            Log.d("listItem", items.get(i));
+        }
 
     }
 

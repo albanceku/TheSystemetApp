@@ -12,6 +12,10 @@ public class Product {
     private String productGroup; // e.g. <Varugrupp>Okryddad sprit</Varugrupp>
     private String type; // e.g. <Typ>Syrlig öl</Typ>
 
+    public Product (String name) {
+        this.name = name;
+    }
+
     /**
      * Defines a Builder for an Object.
      */
