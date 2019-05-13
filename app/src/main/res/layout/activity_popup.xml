@@ -8,7 +8,10 @@
     android:background="@color/snövit"
     tools:context="se.juneday.thesystembolaget.PopupActivity">
 
-
+    <ImageView
+        android:layout_width="283dp"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/systemlog" />
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -47,5 +50,7 @@
             android:textColor="@color/snövit"
             android:text="No" />
     </LinearLayout>
+
+
 
 </LinearLayout>
