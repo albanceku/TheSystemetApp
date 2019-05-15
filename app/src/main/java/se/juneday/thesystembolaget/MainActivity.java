@@ -10,16 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 
 import com.android.volley.Request;
@@ -38,7 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.juneday.thesystembolaget.dialogs.AgeDialog;
+import se.juneday.thesystembolaget.Fragments.FavoritesFragment;
+import se.juneday.thesystembolaget.Fragments.HomeFragment;
+import se.juneday.thesystembolaget.Fragments.SearchFragment;
 import se.juneday.thesystembolaget.dialogs.ProductErrorDialog;
 import se.juneday.thesystembolaget.domain.Product;
 
@@ -48,8 +45,11 @@ public class MainActivity extends AppCompatActivity {
     private List<Product> products;
     private ListView listView;
     private ArrayAdapter<Product> adapter;
+    private ArrayAdapter<String> stringAdapter;
+    private ArrayAdapter<String> favoriteAdapter;
     private List<String> latestSearch = new ArrayList<>();
-    List<String> items = new ArrayList<String>();
+    private List<String> items = new ArrayList<String>();
+    private List<String> favorites = new ArrayList<>();
 
     private static final String MIN_ALCO = "min_alcohol";
     private static final String MAX_ALCO = "max_alcohol";
@@ -63,15 +63,37 @@ public class MainActivity extends AppCompatActivity {
     private void setupListView() {
         // look up a reference to the ListView object
         listView = findViewById(R.id.product_list); // ändra här till latestsearch_list
+                     listView.invalidate();
 
         // create an adapter (with the faked products)
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
                 products);  //ändra till latestsearch
 
-        Log.d(LOG_TAG, " products: " + products);
+        Log.d(LOG_TAG, " IDIOT products: " + products);
         // Set listView's adapter to the new adapter
         listView.setAdapter(adapter);
+    }
+
+    private void setupLatestSearchView() {
+        //listView.invalidate();
+        //listView = findViewById(R.id.latestsearch_list);
+                listView = findViewById(R.id.product_list); 
+        stringAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items);
+        Log.d(LOG_TAG, " IDIOT latest search:" + items);
+
+        listView.setAdapter(stringAdapter);
+    }
+
+    private void setupFavoriteView() {
+        listView = findViewById(R.id.product_list);
+        stringAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, favorites);
+        Log.d(LOG_TAG, "cliked favorites");
+        listView.setAdapter(stringAdapter);
+
+
     }
 
 
@@ -97,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         return productList;
     }
 
-    @Override
+ /*   @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // action with ID action_refresh was selected
@@ -110,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
+    }    */
 
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,7 +141,11 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     } */
+     protected void onResume() {
+         super.onResume();
 
+         loadLatestSearch();
+     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -129,33 +155,44 @@ public class MainActivity extends AppCompatActivity {
 
         products = new ArrayList<>();
 
-        loadLatestSearch();
-        Log.d(LOG_TAG, "items" + items);
+
+
 
         // setup listview (and friends)
-        setupListView();
+    //    setupListView();
+        
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_placement);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
     }
+
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener navListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             Fragment selectedFragment = null;
-
             switch(menuItem.getItemId()) {
                 case R.id.place_home:
+                    //return true;
                     selectedFragment = new HomeFragment();
+
+                    Log.d(LOG_TAG, "user pressed home");
+                    setupLatestSearchView();
                     break;
                 case R.id.place_favorites:
                     selectedFragment = new FavoritesFragment();
+                    Log.d(LOG_TAG, "user pressed favorites");
+                    setupFavoriteView();
                     break;
                 case R.id.place_search:
                     selectedFragment = new SearchFragment();
                     Log.d(LOG_TAG, "user presssed SEARCH");
+                    setupListView();
                     showSearchDialog();
+
                     break;
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment)
@@ -236,12 +273,14 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, " arguments: " + entry.getValue());
 
+        
         }
         // print argument
         Log.d(LOG_TAG, " arguments: " + argumentString);
 
         saveLatestSearch();
-
+        loadLatestSearch();
+        Log.d(LOG_TAG, "items" + items);
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://rameau.sandklef.com:9090/search/products/all/" + argumentString;
         Log.d(LOG_TAG, "Searching using url: " + url);
