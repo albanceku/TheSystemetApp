@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         return productList;
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // action with ID action_refresh was selected
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
+    } */
 
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     } */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "items" + items);
 
         // setup listview (and friends)
-        setupListView();
+
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_placement);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
@@ -156,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                     selectedFragment = new SearchFragment();
                     Log.d(LOG_TAG, "user presssed SEARCH");
                     showSearchDialog();
+                    setupListView();
                     break;
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment)
@@ -295,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
         String latestSearchString = settings.getString("latestSearch", "");
         String[] itemValue = latestSearchString.split(",");
 
-        for (int i = 0; i < itemValue.length; i++) {
+       for (int i = 0; i < itemValue.length; i++) {
             items.add(itemValue[i]);
         }
 
