@@ -12,9 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+import android.app.Dialog;
+
 
 
 import com.android.volley.Request;
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> stringAdapter;
     private ArrayAdapter<String> favoriteAdapter;
     private List<String> latestSearch = new ArrayList<>();
-    private List<String> items = new ArrayList<String>();
+    private List<String> items = new ArrayList<>();
     private List<String> favorites = new ArrayList<>();
 
     private static final String MIN_ALCO = "min_alcohol";
@@ -62,17 +66,41 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupListView() {
         // look up a reference to the ListView object
-        listView = findViewById(R.id.product_list); // ändra här till latestsearch_list
+        listView = findViewById(R.id.product_list);
                      listView.invalidate();
 
         // create an adapter (with the faked products)
         adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1,
-                products);  //ändra till latestsearch
+                products);
 
-        Log.d(LOG_TAG, " IDIOT products: " + products);
         // Set listView's adapter to the new adapter
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long l){
+                final Product selected = (Product) parent.getItemAtPosition(position);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Product Information")
+                        .setMessage(selected.toString())
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .setNegativeButton("Add to favorites", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                favorites.add(selected.toString());
+                            }
+                        });
+                builder.show();
+
+                //Toast.makeText(getApplicationContext(),"This is"+selected,Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setupLatestSearchView() {
@@ -92,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1, favorites);
         Log.d(LOG_TAG, "cliked favorites");
         listView.setAdapter(stringAdapter);
-
 
     }
 
@@ -154,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         products = new ArrayList<>();
+
+        loadLatestSearch();
 
 
 
@@ -261,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         {
             // If first arg use "?", otherwise use "&"
             // E g:    ?min_alcohol=4.4&max_alcohol=5.4
-            argumentString += (argumentString.equals("")?"?":"&")
+            argumentString += (argumentString.equalsIgnoreCase("")?"?":"&")
                     + entry.getKey()
                     + "="
                     + entry.getValue();
@@ -273,13 +302,13 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, " arguments: " + entry.getValue());
 
+            Log.d(LOG_TAG, " items " + items);
+
         
         }
         // print argument
         Log.d(LOG_TAG, " arguments: " + argumentString);
 
-        saveLatestSearch();
-        loadLatestSearch();
         Log.d(LOG_TAG, "items" + items);
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://rameau.sandklef.com:9090/search/products/all/" + argumentString;
@@ -307,6 +336,8 @@ public class MainActivity extends AppCompatActivity {
                 ped.show(getSupportFragmentManager(), "product error dialog");
 
                 showSearchDialog();
+                saveLatestSearch();
+                loadLatestSearch();
             }
         });
 
