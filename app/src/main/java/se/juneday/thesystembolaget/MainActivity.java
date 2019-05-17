@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
      protected void onResume() {
          super.onResume();
 
-         loadLatestSearch();
+        loadLatestSearch();
      }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
         products = new ArrayList<>();
 
-        loadLatestSearch();
+        //loadLatestSearch();
 
 
 
@@ -303,9 +303,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, " arguments: " + entry.getValue());
 
             Log.d(LOG_TAG, " items " + items);
+            //  saveLatestSearch();
+            //  loadLatestSearch();
 
         
         }
+
+        saveLatestSearch();
+        loadLatestSearch();
         // print argument
         Log.d(LOG_TAG, " arguments: " + argumentString);
 
@@ -336,8 +341,8 @@ public class MainActivity extends AppCompatActivity {
                 ped.show(getSupportFragmentManager(), "product error dialog");
 
                 showSearchDialog();
-                saveLatestSearch();
-                loadLatestSearch();
+              /*  saveLatestSearch();
+                loadLatestSearch(); */
             }
         });
 
@@ -367,6 +372,8 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < itemValue.length; i++) {
             items.add(itemValue[i]);
+
+
         }
 
         for (int i=0; i<items.size(); i++) {
