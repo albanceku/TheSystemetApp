@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:background="@color/snövit"
-    tools:context="se.juneday.thesystembolaget.Activities.PopupActivity">
+    tools:context="se.juneday.thesystembolaget.PopupActivity">
 
     <ImageView
         android:layout_width="283dp"
