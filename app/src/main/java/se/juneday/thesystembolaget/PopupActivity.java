@@ -1,4 +1,4 @@
-package se.juneday.thesystembolaget.Activities;
+package se.juneday.thesystembolaget;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
