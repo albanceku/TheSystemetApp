@@ -173,7 +173,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Name: " + name + "\n" + "Price: " + price + " SEK";
+        return name + "\n" + price + " SEK";
     }
 
     /**

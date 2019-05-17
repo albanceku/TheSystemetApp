@@ -82,8 +82,9 @@ public class MainActivity extends AppCompatActivity {
                 final Product selected = (Product) parent.getItemAtPosition(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Product Information")
-                        .setMessage(selected.toString())
+                builder.setTitle(selected.name())
+                        .setMessage(selected.price() + " SEK" + "\n" + selected.volume() + " ml"
+                                + "\n" + selected.alcohol() + " %")
                         .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
 
                             @Override
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.product_list);
         stringAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, favorites);
-        Log.d(LOG_TAG, "cliked favorites");
+        Log.d(LOG_TAG, "clicked favorites");
         listView.setAdapter(stringAdapter);
 
     }
