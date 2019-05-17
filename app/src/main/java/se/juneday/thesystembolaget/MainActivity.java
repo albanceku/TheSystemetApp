@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> latestSearch = new ArrayList<>();
     private List<String> items = new ArrayList<>();
     private List<String> favorites = new ArrayList<>();
+    private List<String> favoriteItems = new ArrayList<>();
 
     private static final String MIN_ALCO = "min_alcohol";
     private static final String MAX_ALCO = "max_alcohol";
@@ -94,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 favorites.add(selected.toString());
+                                saveFavorites();
+                                loadFavorites();
                             }
                         });
                 builder.show();
@@ -112,14 +115,63 @@ public class MainActivity extends AppCompatActivity {
         Log.d(LOG_TAG, " IDIOT latest search:" + items);
 
         listView.setAdapter(stringAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long l){
+                final String selected = (String) parent.getItemAtPosition(position);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Latest search product")
+                        .setMessage(selected)
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .setNegativeButton("Remove from latest search", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                items.remove(selected);
+                                setupLatestSearchView();
+                            }
+                        });
+                builder.show();
+            }
+        });
+
     }
 
     private void setupFavoriteView() {
         listView = findViewById(R.id.product_list);
         stringAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, favorites);
+                android.R.layout.simple_list_item_1, favoriteItems);
         Log.d(LOG_TAG, "cliked favorites");
         listView.setAdapter(stringAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long l){
+                final String selected = (String) parent.getItemAtPosition(position);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Product Information")
+                        .setMessage(selected)
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
+
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .setNegativeButton("Remove from favorites", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                favoriteItems.remove(selected);
+                                setupFavoriteView();
+                            }
+                        });
+                builder.show();
+            }
+        });
 
     }
 
@@ -179,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupLatestSearchView();
 
         products = new ArrayList<>();
 
@@ -378,6 +431,33 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i=0; i<items.size(); i++) {
             Log.d("listItem", items.get(i));
+        }
+
+    }
+
+    public void saveFavorites() {
+        StringBuilder SB = new StringBuilder();
+        for(String s : favorites) {
+            SB.append(s);
+            SB.append(",");
+        }
+
+        SharedPreferences prefs = getSharedPreferences("PREFS", 0);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString("favorites", SB.toString());
+        edit.commit();
+    }
+
+    public void loadFavorites() {
+        SharedPreferences prefs = getSharedPreferences("PREFS", 0);
+        String favoritesString = prefs.getString("favorites", "");
+        String[] item = favoritesString.split(",");
+
+        for (int i = 0; i < item.length; i++) {
+            favoriteItems.add(item[i]);
+        }
+        for (int i=0; i<favoriteItems.size(); i++) {
+            Log.d("favoriteItems", favoriteItems.get(i));
         }
 
     }
