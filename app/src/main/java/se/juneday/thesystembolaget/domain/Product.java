@@ -1,7 +1,5 @@
 package se.juneday.thesystembolaget.domain;
 
-import java.util.Comparator;
-
 public class Product {
 
     private String name;

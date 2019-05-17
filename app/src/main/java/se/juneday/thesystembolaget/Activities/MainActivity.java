@@ -1,13 +1,13 @@
-package se.juneday.thesystembolaget;
+package se.juneday.thesystembolaget.Activities;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -16,10 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-import android.app.Dialog;
-
-
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -40,6 +36,7 @@ import java.util.Map;
 import se.juneday.thesystembolaget.Fragments.FavoritesFragment;
 import se.juneday.thesystembolaget.Fragments.HomeFragment;
 import se.juneday.thesystembolaget.Fragments.SearchFragment;
+import se.juneday.thesystembolaget.R;
 import se.juneday.thesystembolaget.dialogs.ProductErrorDialog;
 import se.juneday.thesystembolaget.domain.Product;
 
