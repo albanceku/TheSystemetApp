@@ -1,5 +1,6 @@
 package se.juneday.thesystembolaget;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String MAX_PRICE = "max_price";
     // private static final String TYPE = "product_group";
     private static final String NAME = "name";
-
+    private String temporarySearchTerm;
 
 
     private void setupListView() {
@@ -349,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
                     + entry.getValue();
 
        //     Product lsProduct = new Product(entry.getValue());
-
+            temporarySearchTerm = entry.getValue();
             latestSearch.add(entry.getValue());
             Log.d(LOG_TAG, "latestSearch" + latestSearch);
 
@@ -362,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
         
         }
 
-        saveLatestSearch();
+        saveLatestSearch(temporarySearchTerm);
         loadLatestSearch();
         // print argument
         Log.d(LOG_TAG, " arguments: " + argumentString);
@@ -405,17 +406,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void saveLatestSearch() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for(String s : latestSearch) {
-            stringBuilder.append(s);
-            stringBuilder.append(",");
-            }
+    public void saveLatestSearch(String searchTerm) {
 
         SharedPreferences settings = getSharedPreferences("PREFS", 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("latestSearch", stringBuilder.toString());
+        editor.putString("latestSearch", searchTerm.toString());
         editor.commit();
+
+
+        /*SharedPreferences settings = getSharedPreferences("PREFS", 0);
+        /SharedPreferences.Editor editor = settings.edit();
+        editor.putString("latestSearch", searchTerm.toString());
+        editor.commit();
+  */
         }
 
     public void loadLatestSearch() {
@@ -461,5 +464,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 
 }
