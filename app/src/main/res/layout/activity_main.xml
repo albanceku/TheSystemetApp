@@ -26,6 +26,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_placement"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp" />
 </RelativeLayout>
