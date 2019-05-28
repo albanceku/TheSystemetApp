@@ -1,8 +1,7 @@
 package se.juneday.thesystembolaget;
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -18,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.app.Dialog;
 
 
 
@@ -38,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.juneday.thesystembolaget.DB.DatabaseHelper;
 import se.juneday.thesystembolaget.Fragments.FavoritesFragment;
 import se.juneday.thesystembolaget.Fragments.HomeFragment;
 import se.juneday.thesystembolaget.Fragments.SearchFragment;
@@ -51,19 +50,16 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<Product> adapter;
     private ArrayAdapter<String> stringAdapter;
-    private ArrayAdapter<String> favoriteAdapter;
-    private List<String> latestSearch = new ArrayList<>();
-    private List<String> items = new ArrayList<>();
-    private List<String> favorites = new ArrayList<>();
-    private List<String> favoriteItems = new ArrayList<>();
+    private ArrayAdapter<Product> favoriteAdapter;
+    private List<String> latestSearch;
+    private List<Product> favorites;
 
     private static final String MIN_ALCO = "min_alcohol";
     private static final String MAX_ALCO = "max_alcohol";
     private static final String MIN_PRICE = "min_price";
     private static final String MAX_PRICE = "max_price";
-    // private static final String TYPE = "product_group";
     private static final String NAME = "name";
-    private String temporarySearchTerm;
+    private DatabaseHelper myDB;
 
 
     private void setupListView() {
@@ -84,8 +80,9 @@ public class MainActivity extends AppCompatActivity {
                 final Product selected = (Product) parent.getItemAtPosition(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Product Information")
-                        .setMessage(selected.toString())
+                builder.setTitle(selected.name())
+                        .setMessage(selected.price() + " SEK\n" + selected.alcohol() + " %\n" +
+                                selected.volume() + " ml")
                         .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
 
                             @Override
@@ -95,25 +92,18 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("Add to favorites", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                favorites.add(selected.toString());
-                                saveFavorites();
-                                loadFavorites();
+                                addFavorites(selected.name(), selected.price(), selected.alcohol(), selected.volume());
                             }
                         });
                 builder.show();
-
-                //Toast.makeText(getApplicationContext(),"This is"+selected,Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void setupLatestSearchView() {
-        //listView.invalidate();
-        //listView = findViewById(R.id.latestsearch_list);
-                listView = findViewById(R.id.product_list); 
+        listView = findViewById(R.id.product_list);
         stringAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, items);
-        Log.d(LOG_TAG, " IDIOT latest search:" + items);
+                android.R.layout.simple_list_item_1, latestSearch);
 
         listView.setAdapter(stringAdapter);
 
@@ -122,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 final String selected = (String) parent.getItemAtPosition(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Latest search product")
+                builder.setTitle("Latest queries")
                         .setMessage(selected)
                         .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
 
@@ -133,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("Remove from latest search", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                items.remove(selected);
+                                deleteLatestSearch(selected);
+                                latestSearch.remove(selected);
                                 setupLatestSearchView();
                             }
                         });
@@ -145,28 +136,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupFavoriteView() {
         listView = findViewById(R.id.product_list);
-        stringAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, favoriteItems);
-        Log.d(LOG_TAG, "cliked favorites");
-        listView.setAdapter(stringAdapter);
+        favoriteAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, favorites);
+        Log.d(LOG_TAG, "clicked favorites");
+        listView.setAdapter(favoriteAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long l){
-                final String selected = (String) parent.getItemAtPosition(position);
+                final Product selected = (Product) parent.getItemAtPosition(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Product Information")
-                        .setMessage(selected)
+                builder.setTitle(selected.name())
+                        .setMessage(selected.price() + " SEK\n" + selected.alcohol() + " %\n" +
+                                selected.volume() + " ml")
                         .setPositiveButton("ok", new DialogInterface.OnClickListener()   {
 
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                Log.d(LOG_TAG, "favorites" + selected.nr());
                             }
                         })
                         .setNegativeButton("Remove from favorites", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                favoriteItems.remove(selected);
+                                deleteFavorites(selected);
+                                favorites.remove(selected);
                                 setupFavoriteView();
                             }
                         });
@@ -199,53 +193,20 @@ public class MainActivity extends AppCompatActivity {
         return productList;
     }
 
- /*   @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // action with ID action_refresh was selected
-            case R.id.place_search:
-                Log.d(LOG_TAG, "user presssed SEARCH");
-                showSearchDialog(); //
-                break;
-            default:
-                Log.d(LOG_TAG, "uh oh ;)");
-                break;
-        }
-        return true;
-    }    */
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.bottom_placement, menu);
-
-        return true;
-    } */
-     protected void onResume() {
-         super.onResume();
-
-        loadLatestSearch();
-     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupLatestSearchView();
-
         products = new ArrayList<>();
 
-        //loadLatestSearch();
+        myDB = new DatabaseHelper(this);
+        getLatestSearch();
 
+        setupLatestSearchView();
 
-
-
-        // setup listview (and friends)
-    //    setupListView();
-        
-
-        BottomNavigationView bottomNav = findViewById(R.id.bottom_placement);
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_menu);
         bottomNav.setOnNavigationItemSelectedListener(navListener);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
@@ -261,13 +222,14 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.place_home:
                     //return true;
                     selectedFragment = new HomeFragment();
-
+                    getLatestSearch();
                     Log.d(LOG_TAG, "user pressed home");
                     setupLatestSearchView();
                     break;
                 case R.id.place_favorites:
                     selectedFragment = new FavoritesFragment();
                     Log.d(LOG_TAG, "user pressed favorites");
+                    getFavorites();
                     setupFavoriteView();
                     break;
                 case R.id.place_search:
@@ -349,26 +311,11 @@ public class MainActivity extends AppCompatActivity {
                     + "="
                     + entry.getValue();
 
-       //     Product lsProduct = new Product(entry.getValue());
-            temporarySearchTerm = entry.getValue();
-            latestSearch.add(entry.getValue());
-            Log.d(LOG_TAG, "latestSearch" + latestSearch);
-
-        Log.d(LOG_TAG, " arguments: " + entry.getValue());
-
-            Log.d(LOG_TAG, " items " + items);
-            //  saveLatestSearch();
-            //  loadLatestSearch();
-
-        
+            String keyToUpperCase = entry.getKey().substring(0, 1).toUpperCase();
+            String key = keyToUpperCase + entry.getKey().substring(1).replace("_", " ");
+            String query = key + ": " + entry.getValue();
+            addLatestSearch(query);
         }
-
-        saveLatestSearch(temporarySearchTerm);
-        loadLatestSearch();
-        // print argument
-        Log.d(LOG_TAG, " arguments: " + argumentString);
-
-        Log.d(LOG_TAG, "items" + items);
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://rameau.sandklef.com:9090/search/products/all/" + argumentString;
         Log.d(LOG_TAG, "Searching using url: " + url);
@@ -389,14 +336,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-               // Log.d(LOG_TAG, " cause: " + error.getCause().getMessage());
 
                 ProductErrorDialog ped = new ProductErrorDialog();
                 ped.show(getSupportFragmentManager(), "product error dialog");
 
                 showSearchDialog();
-              /*  saveLatestSearch();
-                loadLatestSearch(); */
             }
         });
 
@@ -406,64 +350,75 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void saveLatestSearch(String searchTerm) {
-
-        SharedPreferences settings = getSharedPreferences("PREFS", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("latestSearch", searchTerm.toString());
-        editor.commit();
-
-
-        /*SharedPreferences settings = getSharedPreferences("PREFS", 0);
-        /SharedPreferences.Editor editor = settings.edit();
-        editor.putString("latestSearch", searchTerm.toString());
-        editor.commit();
-  */
+    public void addLatestSearch(String entry){
+        boolean isInserted = myDB.insertDataLatest(entry);
+        if(isInserted = true){
+            Log.d(LOG_TAG, "Saved to latest search");
+        }else{
+            Log.d(LOG_TAG, "Couldn't save to latest search");
         }
-
-    public void loadLatestSearch() {
-        SharedPreferences settings = getSharedPreferences("PREFS", 0);
-        String latestSearchString = settings.getString("latestSearch", "");
-        String[] itemValue = latestSearchString.split(",");
-
-        for (int i = 0; i < itemValue.length; i++) {
-            items.add(itemValue[i]);
-
-
-        }
-
-        for (int i=0; i<items.size(); i++) {
-            Log.d("listItem", items.get(i));
-        }
-
     }
 
-    public void saveFavorites() {
-        StringBuilder SB = new StringBuilder();
-        for(String s : favorites) {
-            SB.append(s);
-            SB.append(",");
+    public void addFavorites(String name, double price, double alcohol, int volume){
+        boolean isInserted = myDB.insertDataFavorites(name, price,
+                alcohol, volume);
+        if(isInserted = true){
+            Toast.makeText(MainActivity.this, "Saved to favorites",
+                    Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(MainActivity.this, "Something went wrong while saving",
+                    Toast.LENGTH_LONG).show();
         }
-
-        SharedPreferences prefs = getSharedPreferences("PREFS", 0);
-        SharedPreferences.Editor edit = prefs.edit();
-        edit.putString("favorites", SB.toString());
-        edit.commit();
     }
 
-    public void loadFavorites() {
-        SharedPreferences prefs = getSharedPreferences("PREFS", 0);
-        String favoritesString = prefs.getString("favorites", "");
-        String[] item = favoritesString.split(",");
-
-        for (int i = 0; i < item.length; i++) {
-            favoriteItems.add(item[i]);
+    public void getFavorites(){
+        favorites = new ArrayList<>();
+        Cursor result = myDB.getAllDataFavorites();
+        if(result.getCount() == 0) {
+            Log.d(LOG_TAG, "The database was empty...");
+        }else{
+            while(result.moveToNext()){
+                Product product = new Product.Builder()
+                        .name(result.getString(0))
+                        .price(result.getDouble(1))
+                        .alcohol(result.getDouble(2))
+                        .volume(result.getInt(3))
+                        .nr(result.getInt(4))
+                        .build();
+                favorites.add(product);
+            }
         }
-        for (int i=0; i<favoriteItems.size(); i++) {
-            Log.d("favoriteItems", favoriteItems.get(i));
-        }
-
     }
 
+    public void getLatestSearch(){
+        latestSearch = new ArrayList<>();
+        Cursor result = myDB.getAllDataLatest();
+        if(result.getCount() == 0) {
+            Log.d(LOG_TAG, "The database was empty...");
+        }else{
+            while(result.moveToNext()){
+                latestSearch.add(result.getString(0));
+            }
+        }
+    }
 
+    public void deleteFavorites(Product product){
+        Integer deletedRows = myDB.deleteDataFavorites(product);
+        if(deletedRows > 0){
+            Toast.makeText(MainActivity.this, "Deleted from favorites",
+                    Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(MainActivity.this, "Something went wrong while",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void deleteLatestSearch(String string){
+        Integer deletedRows = myDB.deleteDataLatest(string);
+        if(deletedRows > 0){
+            Log.d(LOG_TAG, "Deleted from latest search");
+        }else{
+            Log.d(LOG_TAG, "Something went wrong when deleting");
+        }
+    }
 }

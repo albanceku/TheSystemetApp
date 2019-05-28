@@ -6,11 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import se.juneday.thesystembolaget.R;
 import se.juneday.thesystembolaget.dialogs.AgeDialog;
 
 public class PopupActivity extends AppCompatActivity {
-    private Button button;
+    private Button yesButton;
     private Button noButton;
 
     @Override
@@ -18,14 +17,14 @@ public class PopupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup);
 
-        button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        yesButton = (Button) findViewById(R.id.yes_button);
+        yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openMainActivity();
             }
         });
-        noButton = (Button) findViewById(R.id.button2);
+        noButton = (Button) findViewById(R.id.no_button);
         noButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
