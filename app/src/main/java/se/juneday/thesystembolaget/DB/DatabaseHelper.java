@@ -26,9 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_1_LATEST = "Latest_search";
     public static final String COL_2_LATEST = "Id";
 
-
-
-
+    
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 9);
     }
